@@ -6,6 +6,7 @@ import * as helper from "https://deno.land/x/denops_std@v3.3.1/helper/mod.ts";
 import * as op from "https://deno.land/x/denops_std@v3.3.1/option/mod.ts";
 import * as path from "https://deno.land/std@0.141.0/path/mod.ts";
 import * as vars from "https://deno.land/x/denops_std@v3.3.1/variable/mod.ts";
+import dir from "https://deno.land/x/dir@v1.2.0/mod.ts";
 import type { Denops } from "https://deno.land/x/denops_std@v3.3.1/mod.ts";
 import { Lock } from "https://deno.land/x/async@v1.1.5/mod.ts";
 import { assertBoolean } from "https://deno.land/x/unknownutil@v2.0.0/mod.ts";
@@ -13,7 +14,7 @@ import { assertBoolean } from "https://deno.land/x/unknownutil@v2.0.0/mod.ts";
 let debug = false;
 let enable = true;
 let writeEcho = true;
-let backup_dir = "~/.cache/dps-autobackup";
+let backup_dir = path.join(dir("home"), ".cache", "dps-autobackup");
 
 let events: autocmd.AutocmdEvent[] = [
   "CursorHold",
@@ -71,7 +72,10 @@ export async function main(denops: Denops): Promise<void> {
           }
 
           // Get output path.
-          const outbase = inpathNoExt.replaceAll(path.SEP, "%");
+          const outbase = inpathNoExt.replaceAll(path.SEP, "%").replaceAll(
+            ":",
+            "",
+          );
           const d = dayjs.dayjs();
           const year = d.format("YYYY");
           const month = d.format("MM");
