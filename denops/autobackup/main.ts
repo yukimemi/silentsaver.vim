@@ -1,125 +1,31 @@
-import { merge } from "https://cdn.skypack.dev/lodash@4.17.21";
 import * as autocmd from "https://deno.land/x/denops_std@v3.3.1/autocmd/mod.ts";
+import * as dayjs from "https://cdn.skypack.dev/dayjs@2.0.0-alpha.2/";
+import * as fn from "https://deno.land/x/denops_std@v3.3.1/function/mod.ts";
+import * as fs from "https://deno.land/std@0.141.0/fs/mod.ts";
 import * as helper from "https://deno.land/x/denops_std@v3.3.1/helper/mod.ts";
 import * as op from "https://deno.land/x/denops_std@v3.3.1/option/mod.ts";
+import * as path from "https://deno.land/std@0.141.0/path/mod.ts";
 import * as vars from "https://deno.land/x/denops_std@v3.3.1/variable/mod.ts";
 import type { Denops } from "https://deno.land/x/denops_std@v3.3.1/mod.ts";
 import { Lock } from "https://deno.land/x/async@v1.1.5/mod.ts";
-import {
-  ensureBoolean,
-  ensureNumber,
-} from "https://deno.land/x/unknownutil@v2.0.0/mod.ts";
+import { assertBoolean } from "https://deno.land/x/unknownutil@v2.0.0/mod.ts";
 
-const lineWait = 100;
-const columnWait = 100;
+let debug = false;
+let enable = true;
+let writeEcho = true;
+let backup_dir = "~/.cache/dps-autobackup";
 
-type LineOrColumn = "cursorline" | "cursorcolumn";
-
-type Event = {
-  name: autocmd.AutocmdEvent;
-  set: boolean;
-  wait: number;
-};
-
-type Cursor = {
-  enable: boolean;
-  option: LineOrColumn;
-  state: boolean;
-  events: Event[];
-};
-
-let cfgLine: Cursor = {
-  enable: true,
-  option: "cursorline",
-  state: false,
-  events: [
-    {
-      name: "CursorHold",
-      set: true,
-      wait: lineWait,
-    },
-    {
-      name: "CursorHoldI",
-      set: true,
-      wait: lineWait,
-    },
-    {
-      name: "WinEnter",
-      set: true,
-      wait: 0,
-    },
-    {
-      name: "BufEnter",
-      set: true,
-      wait: 0,
-    },
-    {
-      name: "CmdwinLeave",
-      set: true,
-      wait: 0,
-    },
-    {
-      name: "CursorMoved",
-      set: false,
-      wait: 0,
-    },
-    {
-      name: "CursorMovedI",
-      set: false,
-      wait: 0,
-    },
-  ],
-};
-let cfgColumn: Cursor = {
-  enable: true,
-  option: "cursorcolumn",
-  state: false,
-  events: [
-    {
-      name: "CursorHold",
-      set: true,
-      wait: columnWait,
-    },
-    {
-      name: "CursorHoldI",
-      set: true,
-      wait: columnWait,
-    },
-    {
-      name: "WinEnter",
-      set: true,
-      wait: 0,
-    },
-    {
-      name: "BufEnter",
-      set: true,
-      wait: 0,
-    },
-    {
-      name: "CmdwinLeave",
-      set: true,
-      wait: 0,
-    },
-    {
-      name: "CursorMoved",
-      set: false,
-      wait: 0,
-    },
-    {
-      name: "CursorMovedI",
-      set: false,
-      wait: 0,
-    },
-  ],
-};
+let events: autocmd.AutocmdEvent[] = [
+  "CursorHold",
+  "CursorHoldI",
+  "BufWritePre",
+];
 
 const lock = new Lock();
 
 export async function main(denops: Denops): Promise<void> {
   // debug.
-  const debug = await vars.g.get(denops, "autocursor_debug", false);
-  // fix state interval.
-  const fixInterval = await vars.g.get(denops, "autocursor_fix_interval", 5000);
+  debug = await vars.g.get(denops, "autobackup_debug", debug);
   // deno-lint-ignore no-explicit-any
   const clog = (...data: any[]): void => {
     if (debug) {
@@ -127,88 +33,77 @@ export async function main(denops: Denops): Promise<void> {
     }
   };
 
-  // Merge user option.
-  const userCfgLine =
-    (await vars.g.get(denops, "autocursor_cursorline")) as Cursor;
-  const userCfgColumn =
-    (await vars.g.get(denops, "autocursor_cursorcolumn")) as Cursor;
+  // Merge user config.
+  enable = await vars.g.get(denops, "autobackup_enable", enable);
+  writeEcho = await vars.g.get(denops, "autobackup_write_echo", writeEcho);
+  events = await vars.g.get(denops, "autobackup_events", events);
+  backup_dir = await vars.g.get(denops, "autobackup_dir", backup_dir);
 
-  cfgLine = merge(cfgLine, userCfgLine);
-  cfgColumn = merge(cfgColumn, userCfgColumn);
-  clog({ cfgLine, cfgColumn });
+  clog({ debug, enable, writeEcho, events, backup_dir });
 
   denops.dispatcher = {
-    async setOption(
-      set: unknown,
-      wait: unknown,
-      option: unknown,
-    ): Promise<void> {
+    async backup(): Promise<void> {
       try {
-        await lock.with(() => {
-          ensureNumber(wait);
-          ensureBoolean(set);
-          const opt = option as LineOrColumn;
-          if (opt === "cursorline") {
-            if (set === cfgLine.state || !cfgLine.enable) {
-              clog(
-                `setOption: cfgLine.state: ${cfgLine.state}, cfgLine.enable: ${cfgLine.enable} so return.`,
-              );
-              return;
-            }
+        await lock.with(async () => {
+          if (!enable) {
+            clog(`backup skip ! enable: [${enable}]`);
+            return;
           }
-          if (opt === "cursorcolumn") {
-            if (set === cfgColumn.state || !cfgColumn.enable) {
-              clog(
-                `setOption: cfgColumn.state: ${cfgColumn.state}, cfgColumn.enable: ${cfgColumn.enable} so return.`,
-              );
-              return;
-            }
+          // Get filetype and fileformat.
+          const ff = (await op.fileformat.get(denops));
+
+          clog({ ff });
+
+          // Get buffer info.
+          const inpath = (await fn.expand(denops, "%:p")) as string;
+
+          if (!fs.existsSync(inpath)) {
+            clog(`Not found inpath: [${inpath}]`);
+            return;
           }
-          if (opt === "cursorline") {
-            cfgLine.state = set;
+          const inpathNoExt = path.join(
+            path.parse(inpath).dir,
+            path.parse(inpath).name,
+          );
+          let lines = (await fn.getline(denops, 1, "$")).join("\n");
+
+          if (ff === "dos") {
+            lines = lines.split("\n").join("\r\n");
           }
-          if (opt === "cursorcolumn") {
-            cfgColumn.state = set;
+
+          // Get output path.
+          const outbase = inpathNoExt.replaceAll(path.SEP, "%");
+          const d = dayjs.dayjs();
+          const year = d.format("YYYY");
+          const month = d.format("MM");
+          const now = d.format("YYYYMMDD_HHmmssSSS");
+          const outpath = path.normalize(path.join(
+            backup_dir,
+            year,
+            month,
+            `${outbase}_${now}${path.extname(inpath)}`,
+          ));
+
+          clog(`inpath: ${inpath}`);
+          clog(`outpath: ${outpath}`);
+
+          await fs.ensureDir(path.dirname(outpath));
+          await Deno.writeTextFile(outpath, lines);
+
+          if (writeEcho) {
+            console.log(`Write [${outpath}]`);
           }
-          setTimeout(async () => {
-            if (set) {
-              clog(`setOption: set ${option}`);
-              await op[opt].set(denops, true);
-            } else {
-              clog(`setOption: set no${option}`);
-              await op[opt].set(denops, false);
-            }
-          }, wait);
         });
       } catch (e) {
         clog(e);
       }
     },
 
-    async changeCursor(enable: unknown, option: unknown): Promise<void> {
-      ensureBoolean(enable);
-      const opt = option as LineOrColumn;
-      if (!enable) {
-        clog(`set no${opt}`);
-        await op[opt].set(denops, false);
-      }
-      if (opt === "cursorline") {
-        cfgLine.enable = enable;
-      }
-      if (opt === "cursorcolumn") {
-        cfgColumn.enable = enable;
-      }
-    },
-
-    async fixState(interval: unknown): Promise<void> {
-      ensureNumber(interval);
-      setInterval(async () => {
-        cfgLine.state = (await op.cursorline.get(denops)) ? true : false;
-        cfgColumn.state = (await op.cursorcolumn.get(denops)) ? true : false;
-        clog(
-          `Fix state. line: [${cfgLine.state}], column: [${cfgColumn.state}]`,
-        );
-      }, interval);
+    // deno-lint-ignore require-await
+    async change(e: unknown): Promise<void> {
+      assertBoolean(e);
+      console.log(`Auto backup ${e}`);
+      enable = e;
     },
   };
 
@@ -218,32 +113,21 @@ export async function main(denops: Denops): Promise<void> {
     function! s:${denops.name}_notify(method, params) abort
       call denops#plugin#wait_async('${denops.name}', function('denops#notify', ['${denops.name}', a:method, a:params]))
     endfunction
-    command! EnableAutoCursorLine call s:${denops.name}_notify('changeCursor', [v:true, "cursorline"])
-    command! EnableAutoCursorColumn call s:${denops.name}_notify('changeCursor', [v:true, "cursorcolumn"])
-    command! DisableAutoCursorLine call s:${denops.name}_notify('changeCursor', [v:false, "cursorline"])
-    command! DisableAutoCursorColumn call s:${denops.name}_notify('changeCursor', [v:false, "cursorcolumn"])
+    command! EnableAutobackup call s:${denops.name}_notify('change', [v:true])
+    command! DisableAutobackup call s:${denops.name}_notify('change', [v:false])
   `,
   );
 
-  await autocmd.group(denops, "autocursor", (helper) => {
+  await autocmd.group(denops, denops.name, (helper) => {
     helper.remove();
-    [cfgLine, cfgColumn].forEach((cfg) => {
-      cfg.events.forEach((e) => {
-        helper.define(
-          e.name,
-          "*",
-          `call s:${denops.name}_notify('setOption', [${
-            e.set ? "v:true" : "v:false"
-          }, ${e.wait}, '${cfg.option}'])`,
-        );
-      });
+    events.forEach((e) => {
+      helper.define(
+        e,
+        "*",
+        `call s:${denops.name}_notify('backup', [])`,
+      );
     });
-    helper.define(
-      `User`,
-      `DenopsPluginPost:${denops.name}`,
-      `call s:${denops.name}_notify('fixState', [${fixInterval}])`,
-    );
   });
 
-  clog("dps-autocursor has loaded");
+  clog("dps-autobackup has loaded");
 }
