@@ -17,7 +17,6 @@ let backup_dir = "~/.cache/dps-autobackup";
 
 let events: autocmd.AutocmdEvent[] = [
   "CursorHold",
-  "CursorHoldI",
   "BufWritePre",
 ];
 
