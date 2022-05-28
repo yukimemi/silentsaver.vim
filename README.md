@@ -21,6 +21,16 @@ let g:autobackup_dir = "~/.cache/autobackup"
 let g:autobackup_events = ["CursorHold", "BufWritePre"]
 ```
 
+## Commands.
+
+```vim
+" Disable autobackup
+:DisableAutobackup
+
+" Enable autobackup
+:EnableAutobackup
+```
+
 ---
 
 This plugin is inspired by aho-bakaup ! Thank you !
