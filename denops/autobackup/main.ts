@@ -79,11 +79,13 @@ export async function main(denops: Denops): Promise<void> {
           const d = dayjs.dayjs();
           const year = d.format("YYYY");
           const month = d.format("MM");
+          const day = d.format("DD");
           const now = d.format("YYYYMMDD_HHmmssSSS");
           const outpath = path.normalize(path.join(
             backup_dir,
             year,
             month,
+            day,
             `${outbase}_${now}${path.extname(inpath)}`,
           ));
 
