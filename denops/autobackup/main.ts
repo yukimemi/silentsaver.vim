@@ -1,5 +1,4 @@
 import * as autocmd from "https://deno.land/x/denops_std@v3.3.1/autocmd/mod.ts";
-import * as dayjs from "https://cdn.skypack.dev/dayjs@2.0.0-alpha.2/";
 import * as fn from "https://deno.land/x/denops_std@v3.3.1/function/mod.ts";
 import * as fs from "https://deno.land/std@0.141.0/fs/mod.ts";
 import * as helper from "https://deno.land/x/denops_std@v3.3.1/helper/mod.ts";
@@ -9,12 +8,18 @@ import * as vars from "https://deno.land/x/denops_std@v3.3.1/variable/mod.ts";
 import dir from "https://deno.land/x/dir@v1.2.0/mod.ts";
 import type { Denops } from "https://deno.land/x/denops_std@v3.3.1/mod.ts";
 import { Lock } from "https://deno.land/x/async@v1.1.5/mod.ts";
-import { assertBoolean } from "https://deno.land/x/unknownutil@v2.0.0/mod.ts";
+import { datetime } from "https://deno.land/x/ptera@v1.0.2/mod.ts";
+import {
+  assertBoolean,
+  assertString,
+} from "https://deno.land/x/unknownutil@v2.0.0/mod.ts";
 
 let debug = false;
 let enable = true;
 let writeEcho = true;
-let backup_dir = path.join(dir("home"), ".cache", "dps-autobackup");
+const home = dir("home");
+assertString(home);
+let backup_dir = path.join(home, ".cache", "dps-autobackup");
 
 let events: autocmd.AutocmdEvent[] = [
   "CursorHold",
@@ -22,6 +27,18 @@ let events: autocmd.AutocmdEvent[] = [
 ];
 
 const lock = new Lock();
+
+export function existsSync(filePath: string): boolean {
+  try {
+    Deno.lstatSync(filePath);
+    return true;
+  } catch (err) {
+    if (err instanceof Deno.errors.NotFound) {
+      return false;
+    }
+    throw err;
+  }
+}
 
 export async function main(denops: Denops): Promise<void> {
   // debug.
@@ -57,7 +74,7 @@ export async function main(denops: Denops): Promise<void> {
           // Get buffer info.
           const inpath = (await fn.expand(denops, "%:p")) as string;
 
-          if (!fs.existsSync(inpath)) {
+          if (!existsSync(inpath)) {
             clog(`Not found inpath: [${inpath}]`);
             return;
           }
@@ -76,11 +93,11 @@ export async function main(denops: Denops): Promise<void> {
             ":",
             "",
           );
-          const d = dayjs.dayjs();
-          const year = d.format("YYYY");
-          const month = d.format("MM");
-          const day = d.format("DD");
-          const now = d.format("YYYYMMDD_HHmmssSSS");
+          const dt = datetime();
+          const year = dt.format("YYYY");
+          const month = dt.format("MM");
+          const day = dt.format("dd");
+          const now = dt.format("YYYYMMdd_HHmmssS");
           const outpath = path.normalize(path.join(
             backup_dir,
             year,
