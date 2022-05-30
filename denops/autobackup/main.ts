@@ -5,10 +5,10 @@ import * as helper from "https://deno.land/x/denops_std@v3.3.1/helper/mod.ts";
 import * as op from "https://deno.land/x/denops_std@v3.3.1/option/mod.ts";
 import * as path from "https://deno.land/std@0.141.0/path/mod.ts";
 import * as vars from "https://deno.land/x/denops_std@v3.3.1/variable/mod.ts";
+import { format } from "https://deno.land/std@0.141.0/datetime/mod.ts";
 import dir from "https://deno.land/x/dir@v1.2.0/mod.ts";
 import type { Denops } from "https://deno.land/x/denops_std@v3.3.1/mod.ts";
 import { Lock } from "https://deno.land/x/async@v1.1.5/mod.ts";
-import { datetime } from "https://deno.land/x/ptera@v1.0.2/mod.ts";
 import {
   assertBoolean,
   assertString,
@@ -93,11 +93,11 @@ export async function main(denops: Denops): Promise<void> {
             ":",
             "",
           );
-          const dt = datetime();
-          const year = dt.format("YYYY");
-          const month = dt.format("MM");
-          const day = dt.format("dd");
-          const now = dt.format("YYYYMMdd_HHmmssS");
+          const dt = new Date();
+          const year = format(dt, "yyyy");
+          const month = format(dt, "MM");
+          const day = format(dt, "dd");
+          const now = format(dt, "yyyyMMdd_HHmmssSSS");
           const outpath = path.normalize(path.join(
             backup_dir,
             year,
