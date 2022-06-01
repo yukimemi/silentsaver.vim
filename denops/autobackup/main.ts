@@ -17,6 +17,7 @@ import {
 let debug = false;
 let enable = true;
 let writeEcho = true;
+let blacklistFileTypes = ["log"];
 const home = dir("home");
 assertString(home);
 let backup_dir = path.join(home, ".cache", "dps-autobackup");
@@ -53,10 +54,15 @@ export async function main(denops: Denops): Promise<void> {
   // Merge user config.
   enable = await vars.g.get(denops, "autobackup_enable", enable);
   writeEcho = await vars.g.get(denops, "autobackup_write_echo", writeEcho);
+  blacklistFileTypes = await vars.g.get(
+    denops,
+    "autobackup_blacklist_filetypes",
+    blacklistFileTypes,
+  );
   events = await vars.g.get(denops, "autobackup_events", events);
   backup_dir = await vars.g.get(denops, "autobackup_dir", backup_dir);
 
-  clog({ debug, enable, writeEcho, events, backup_dir });
+  clog({ debug, enable, writeEcho, blacklistFileTypes, events, backup_dir });
 
   denops.dispatcher = {
     async backup(): Promise<void> {
@@ -67,9 +73,15 @@ export async function main(denops: Denops): Promise<void> {
             return;
           }
           // Get filetype and fileformat.
+          const ft = (await op.filetype.get(denops));
+          if (blacklistFileTypes.some((x) => x === ft)) {
+            clog(`ft is [${ft}], so no backup.`);
+            return;
+          }
+
           const ff = (await op.fileformat.get(denops));
 
-          clog({ ff });
+          clog({ ft, ff });
 
           // Get buffer info.
           const inpath = (await fn.expand(denops, "%:p")) as string;

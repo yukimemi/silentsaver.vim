@@ -19,6 +19,7 @@ let g:autobackup_enable = v:true
 let g:autobackup_write_echo = v:true
 let g:autobackup_dir = "~/.cache/autobackup"
 let g:autobackup_events = ["CursorHold", "BufWritePre"]
+let g:autobackup_blacklist_filetypes = ["log"]
 ```
 
 ## Commands.
