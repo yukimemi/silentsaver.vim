@@ -4,8 +4,8 @@
 
 ### require.
 
--   [Deno - A modern runtime for JavaScript and TypeScript](https://deno.land/)
--   [vim-denops/denops.vim: 🐜 An ecosystem of Vim/Neovim which allows developers to write cross-platform plugins in Deno](https://github.com/vim-denops/denops.vim)
+- [Deno - A modern runtime for JavaScript and TypeScript](https://deno.land/)
+- [vim-denops/denops.vim: 🐜 An ecosystem of Vim/Neovim which allows developers to write cross-platform plugins in Deno](https://github.com/vim-denops/denops.vim)
 
 ## Sample config.
 
@@ -17,7 +17,9 @@ necessary.
 let g:autobackup_debug = v:false
 let g:autobackup_enable = v:true
 let g:autobackup_write_echo = v:true
-let g:autobackup_dir = "~/.cache/autobackup"
+let g:autobackup_check_timestamp = v:true
+let g:autobackup_use_ui_select = v:false " Neovim only.
+let g:autobackup_dir = "~/.cache/dps-autobackup"
 let g:autobackup_events = ["CursorHold", "BufWritePre"]
 let g:autobackup_blacklist_filetypes = ["log"]
 ```
@@ -30,6 +32,9 @@ let g:autobackup_blacklist_filetypes = ["log"]
 
 " Enable autobackup
 :EnableAutobackup
+
+" Open backup files
+:OpenAutobackup
 ```
 
 ---
