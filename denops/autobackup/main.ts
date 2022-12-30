@@ -19,11 +19,10 @@ import {
 
 let debug = false;
 let enable = true;
-let checkTimestamp = true;
 let writeEcho = true;
 let blacklistFileTypes = ["log"];
 let uiSelect = false;
-const timestamps = new Map<string, number>();
+const files = new Map<string, string>();
 const home = ensureString(dir("home"));
 let backup_dir = path.join(home, ".cache", "dps-autobackup");
 
@@ -94,11 +93,6 @@ export async function main(denops: Denops): Promise<void> {
   enable = await vars.g.get(denops, "autobackup_enable", enable);
   writeEcho = await vars.g.get(denops, "autobackup_write_echo", writeEcho);
   uiSelect = await vars.g.get(denops, "autobackup_use_ui_select", uiSelect);
-  checkTimestamp = await vars.g.get(
-    denops,
-    "autobackup_check_timestamp",
-    checkTimestamp,
-  );
   blacklistFileTypes = await vars.g.get(
     denops,
     "autobackup_blacklist_filetypes",
@@ -111,7 +105,6 @@ export async function main(denops: Denops): Promise<void> {
     debug,
     enable,
     writeEcho,
-    checkTimestamp,
     blacklistFileTypes,
     events,
     backup_dir,
@@ -144,26 +137,20 @@ export async function main(denops: Denops): Promise<void> {
             return;
           }
 
-          // Check timestamp.
-          if (checkTimestamp) {
-            const beforeTimeStamp = timestamps.get(inpath) ??
-              new Date().getTime();
-            const nowTimeStamp = Deno.lstatSync(inpath).mtime?.getTime();
-            if (beforeTimeStamp === nowTimeStamp) {
-              clog(`Same timestamp so backup skip ! [${nowTimeStamp}]`);
-              return;
-            }
-            if (nowTimeStamp) {
-              clog(`Set path: ${inpath}, timestamp: ${nowTimeStamp}`);
-              timestamps.set(inpath, nowTimeStamp);
-            }
-          }
-
-          let lines = (await fn.getline(denops, 1, "$")).join("\n");
+          let buffer = (await fn.getline(denops, 1, "$")).join("\n");
           if (ff === "dos") {
-            lines = lines.split("\n").join("\r\n");
+            buffer = buffer.split("\n").join("\r\n");
           }
 
+          // Check modified.
+          const beforeBuffer = files.get(inpath) ?? buffer;
+          // Save now buffer.
+          files.set(inpath, buffer);
+
+          if (buffer === beforeBuffer) {
+            clog(`Same buffer so backup skip !`);
+            return;
+          }
           // Get output path.
           const outpath = createBackPath(inpath);
 
@@ -171,7 +158,7 @@ export async function main(denops: Denops): Promise<void> {
           clog(`outpath: ${outpath}`);
 
           await fs.ensureDir(path.dirname(outpath));
-          await Deno.writeTextFile(outpath, lines);
+          await Deno.writeTextFile(outpath, buffer);
 
           if (writeEcho) {
             console.log(`Write [${outpath}]`);

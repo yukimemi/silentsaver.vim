@@ -17,7 +17,6 @@ necessary.
 let g:autobackup_debug = v:false
 let g:autobackup_enable = v:true
 let g:autobackup_write_echo = v:true
-let g:autobackup_check_timestamp = v:true
 let g:autobackup_use_ui_select = v:false " Neovim only.
 let g:autobackup_dir = "~/.cache/dps-autobackup"
 let g:autobackup_events = ["CursorHold", "BufWritePre"]
