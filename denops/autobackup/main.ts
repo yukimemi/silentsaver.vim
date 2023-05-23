@@ -4,14 +4,14 @@ import * as fs from "https://deno.land/std@0.188.0/fs/mod.ts";
 import * as helper from "https://deno.land/x/denops_std@v5.0.0/helper/mod.ts";
 import * as op from "https://deno.land/x/denops_std@v5.0.0/option/mod.ts";
 import * as path from "https://deno.land/std@0.188.0/path/mod.ts";
-import * as anonymous from "https://deno.land/x/denops_std@v5.0.0/anonymous/mod.ts";
+import * as lambda from "https://deno.land/x/denops_std@v5.0.0/lambda/mod.ts";
 import * as vars from "https://deno.land/x/denops_std@v5.0.0/variable/mod.ts";
 import { batch } from "https://deno.land/x/denops_std@v5.0.0/batch/mod.ts";
 import { walk } from "https://deno.land/std@0.188.0/fs/walk.ts";
 import { format } from "https://deno.land/std@0.188.0/datetime/mod.ts";
 import dir from "https://deno.land/x/dir@1.5.1/mod.ts";
 import type { Denops } from "https://deno.land/x/denops_std@v5.0.0/mod.ts";
-import { Lock } from "https://deno.land/x/async@v2.0.2/mod.ts";
+import { Semaphore } from "https://deno.land/x/async@v2.0.2/mod.ts";
 import {
   assertBoolean,
   ensureString,
@@ -31,7 +31,7 @@ let events: autocmd.AutocmdEvent[] = [
   "BufWritePre",
 ];
 
-const lock = new Lock();
+const lock = new Semaphore(1);
 
 function existsSync(filePath: string): boolean {
   try {
@@ -63,7 +63,8 @@ function nvimSelect(
   items: string[],
 ): Promise<string | undefined> {
   return new Promise((resolve) => {
-    const callback = anonymous.once(denops, resolve as () => unknown)[0];
+    const callback =
+      lambda.register(denops, resolve as () => unknown, { once: true })[0];
     denops.call(
       "luaeval",
       `
@@ -113,19 +114,19 @@ export async function main(denops: Denops): Promise<void> {
   denops.dispatcher = {
     async backup(): Promise<void> {
       try {
-        await lock.with(async () => {
+        await lock.lock(async () => {
           if (!enable) {
             clog(`backup skip ! enable: [${enable}]`);
             return;
           }
           // Get filetype and fileformat.
-          const ft = (await op.filetype.get(denops));
+          const ft = await op.filetype.get(denops);
           if (blacklistFileTypes.some((x) => x === ft)) {
             clog(`ft is [${ft}], so no backup.`);
             return;
           }
 
-          const ff = (await op.fileformat.get(denops));
+          const ff = await op.fileformat.get(denops);
 
           clog({ ft, ff });
 
