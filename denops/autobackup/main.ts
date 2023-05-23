@@ -1,21 +1,21 @@
-import * as autocmd from "https://deno.land/x/denops_std@v3.12.0/autocmd/mod.ts";
-import * as fn from "https://deno.land/x/denops_std@v3.12.0/function/mod.ts";
-import * as fs from "https://deno.land/std@0.170.0/fs/mod.ts";
-import * as helper from "https://deno.land/x/denops_std@v3.12.0/helper/mod.ts";
-import * as op from "https://deno.land/x/denops_std@v3.12.0/option/mod.ts";
-import * as path from "https://deno.land/std@0.170.0/path/mod.ts";
-import * as anonymous from "https://deno.land/x/denops_std@v3.12.0/anonymous/mod.ts";
-import * as vars from "https://deno.land/x/denops_std@v3.12.0/variable/mod.ts";
-import { batch } from "https://deno.land/x/denops_std@v3.12.0/batch/mod.ts";
-import { walk } from "https://deno.land/std@0.170.0/fs/walk.ts";
-import { format } from "https://deno.land/std@0.170.0/datetime/mod.ts";
+import * as autocmd from "https://deno.land/x/denops_std@v5.0.0/autocmd/mod.ts";
+import * as fn from "https://deno.land/x/denops_std@v5.0.0/function/mod.ts";
+import * as fs from "https://deno.land/std@0.188.0/fs/mod.ts";
+import * as helper from "https://deno.land/x/denops_std@v5.0.0/helper/mod.ts";
+import * as op from "https://deno.land/x/denops_std@v5.0.0/option/mod.ts";
+import * as path from "https://deno.land/std@0.188.0/path/mod.ts";
+import * as anonymous from "https://deno.land/x/denops_std@v5.0.0/anonymous/mod.ts";
+import * as vars from "https://deno.land/x/denops_std@v5.0.0/variable/mod.ts";
+import { batch } from "https://deno.land/x/denops_std@v5.0.0/batch/mod.ts";
+import { walk } from "https://deno.land/std@0.188.0/fs/walk.ts";
+import { format } from "https://deno.land/std@0.188.0/datetime/mod.ts";
 import dir from "https://deno.land/x/dir@1.5.1/mod.ts";
-import type { Denops } from "https://deno.land/x/denops_std@v3.12.0/mod.ts";
-import { Lock } from "https://deno.land/x/async@v1.2.0/mod.ts";
+import type { Denops } from "https://deno.land/x/denops_std@v5.0.0/mod.ts";
+import { Lock } from "https://deno.land/x/async@v2.0.2/mod.ts";
 import {
   assertBoolean,
   ensureString,
-} from "https://deno.land/x/unknownutil@v2.1.0/mod.ts";
+} from "https://deno.land/x/unknownutil@v2.1.1/mod.ts";
 
 let debug = false;
 let enable = true;
