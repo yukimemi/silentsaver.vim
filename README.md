@@ -74,6 +74,7 @@ default is ["CursorHold", "BufWritePre"]
 
 ```
   let g:autobackup_debug = v:false
+  let g:autobackup_write_echo = v:false
   let g:autobackup_dir = "~/.cache/autobackup"
   let g:autobackup_events = ["CursorHold", "BufWritePre", "BufRead"]
   let g:autobackup_ignore_filetypes = ["csv", "log"]
