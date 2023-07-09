@@ -12,15 +12,12 @@ import { format } from "https://deno.land/std@0.188.0/datetime/mod.ts";
 import dir from "https://deno.land/x/dir@1.5.1/mod.ts";
 import type { Denops } from "https://deno.land/x/denops_std@v5.0.0/mod.ts";
 import { Semaphore } from "https://deno.land/x/async@v2.0.2/mod.ts";
-import {
-  assertBoolean,
-  ensureString,
-} from "https://deno.land/x/unknownutil@v2.1.1/mod.ts";
+import { assertBoolean, ensureString } from "https://deno.land/x/unknownutil@v2.1.1/mod.ts";
 
 let debug = false;
 let enable = true;
 let writeEcho = true;
-let blacklistFileTypes = ["log"];
+let ignoreFileTypes = ["log"];
 let uiSelect = false;
 const files = new Map<string, string>();
 const home = ensureString(dir("home"));
@@ -63,8 +60,7 @@ function nvimSelect(
   items: string[],
 ): Promise<string | undefined> {
   return new Promise((resolve) => {
-    const callback =
-      lambda.register(denops, resolve as () => unknown, { once: true })[0];
+    const callback = lambda.register(denops, resolve as () => unknown, { once: true })[0];
     denops.call(
       "luaeval",
       `
@@ -94,10 +90,10 @@ export async function main(denops: Denops): Promise<void> {
   enable = await vars.g.get(denops, "autobackup_enable", enable);
   writeEcho = await vars.g.get(denops, "autobackup_write_echo", writeEcho);
   uiSelect = await vars.g.get(denops, "autobackup_use_ui_select", uiSelect);
-  blacklistFileTypes = await vars.g.get(
+  ignoreFileTypes = await vars.g.get(
     denops,
-    "autobackup_blacklist_filetypes",
-    blacklistFileTypes,
+    "autobackup_ignore_filetypes",
+    ignoreFileTypes,
   );
   events = await vars.g.get(denops, "autobackup_events", events);
   backup_dir = await vars.g.get(denops, "autobackup_dir", backup_dir);
@@ -106,7 +102,7 @@ export async function main(denops: Denops): Promise<void> {
     debug,
     enable,
     writeEcho,
-    blacklistFileTypes,
+    ignoreFileTypes,
     events,
     backup_dir,
   });
@@ -121,7 +117,7 @@ export async function main(denops: Denops): Promise<void> {
           }
           // Get filetype and fileformat.
           const ft = await op.filetype.get(denops);
-          if (blacklistFileTypes.some((x) => x === ft)) {
+          if (ignoreFileTypes.some((x) => x === ft)) {
             clog(`ft is [${ft}], so no backup.`);
             return;
           }
