@@ -63,9 +63,13 @@ C<g:autobackup_ignore_filetypes>                X<g:autobackup_ignore_filetypes>
 A list of filetypes to be ignored.
 default is ["log"]
 
-C<g:autobackup_write_echo>                            X<g:autobackup_write_echo>
+C<g:autobackup_echo>                                        X<g:autobackup_echo>
 Whether to output echo messages during backup.
 default is v:true
+
+C<g:autobackup_notify>                                    X<g:autobackup_notify>
+Whether to `vim.notify` messages during backup. (Neovim only)
+default is v:false
 
 C<g:autobackup_dir>                                          X<g:autobackup_dir>
 Backup directory.
@@ -78,7 +82,8 @@ default is ["CursorHold", "BufWritePre"]
 =head1 Example X<autobackup-example>
 
   let g:autobackup_debug = v:false
-  let g:autobackup_write_echo = v:false
+  let g:autobackup_echo = v:false
+  let g:autobackup_notify = v:true
   let g:autobackup_dir = "~/.cache/autobackup"
   let g:autobackup_events = ["CursorHold", "BufWritePre", "BufRead"]
   let g:autobackup_ignore_filetypes = ["csv", "log"]

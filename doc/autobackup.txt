@@ -6,13 +6,13 @@ Denops auto backup
 
 =============================================================================
 Features ~
-*autobackup-features*
+                                                        *autobackup-features*
 
 dps-autobackup is a Vim plugin that automatically backup files.
 
 =============================================================================
 Installation ~
-*autobackup-installation*
+                                                    *autobackup-installation*
 
 If you use folke/lazy.nvim |https://github.com/folke/lazy.nvim|.
 
@@ -34,20 +34,20 @@ If you use yukimemi/dvpm |https://github.com/yukimemi/dvpm|.
 
 =============================================================================
 Requirements ~
-*autobackup-requirements*
+                                                    *autobackup-requirements*
 
 - [Deno - A modern runtime for JavaScript and TypeScript](https://deno.land/)
 - [vim-denops/denops.vim: 🐜 An ecosystem of Vim/Neovim which allows developers to write cross-platform plugins in Deno](https://github.com/vim-denops/denops.vim)
 =============================================================================
 Usage ~
-*autobackup-usage*
+                                                           *autobackup-usage*
 
 No special settings are required.
 By default, auto backup current buffer on `CursorHold` and `BufWritePre`.
 
 =============================================================================
 Commands ~
-*autobackup-commands*
+                                                        *autobackup-commands*
 
 `:DisableAutobackup`                                      *:DisableAutobackup*
 Disable auto backup.
@@ -60,7 +60,7 @@ Show list of backed up files with quickfix.
 
 =============================================================================
 Config ~
-*autobackup-config*
+                                                          *autobackup-config*
 
 No settings are required. However, the following settings can be made if necessary.
 
@@ -72,9 +72,13 @@ default is v:false
 A list of filetypes to be ignored.
 default is ["log"]
 
-`g:autobackup_write_echo`                            *g:autobackup_write_echo*
+`g:autobackup_echo`                                        *g:autobackup_echo*
 Whether to output echo messages during backup.
 default is v:true
+
+`g:autobackup_notify`                                    *g:autobackup_notify*
+Whether to `vim.notify` messages during backup. (Neovim only)
+default is v:false
 
 `g:autobackup_dir`                                          *g:autobackup_dir*
 Backup directory.
@@ -86,11 +90,12 @@ default is ["CursorHold", "BufWritePre"]
 
 =============================================================================
 Example ~
-*autobackup-example*
+                                                         *autobackup-example*
 
 >
   let g:autobackup_debug = v:false
-  let g:autobackup_write_echo = v:false
+  let g:autobackup_echo = v:false
+  let g:autobackup_notify = v:true
   let g:autobackup_dir = "~/.cache/autobackup"
   let g:autobackup_events = ["CursorHold", "BufWritePre", "BufRead"]
   let g:autobackup_ignore_filetypes = ["csv", "log"]
@@ -98,7 +103,7 @@ Example ~
 
 =============================================================================
 License ~
-*autobackup-license*
+                                                         *autobackup-license*
 
 Licensed under MIT License.
 

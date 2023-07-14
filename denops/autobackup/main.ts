@@ -1,26 +1,27 @@
-import * as autocmd from "https://deno.land/x/denops_std@v5.0.0/autocmd/mod.ts";
-import * as fn from "https://deno.land/x/denops_std@v5.0.0/function/mod.ts";
-import * as fs from "https://deno.land/std@0.188.0/fs/mod.ts";
-import * as helper from "https://deno.land/x/denops_std@v5.0.0/helper/mod.ts";
-import * as op from "https://deno.land/x/denops_std@v5.0.0/option/mod.ts";
-import * as path from "https://deno.land/std@0.188.0/path/mod.ts";
-import * as lambda from "https://deno.land/x/denops_std@v5.0.0/lambda/mod.ts";
-import * as vars from "https://deno.land/x/denops_std@v5.0.0/variable/mod.ts";
-import { batch } from "https://deno.land/x/denops_std@v5.0.0/batch/mod.ts";
-import { walk } from "https://deno.land/std@0.188.0/fs/walk.ts";
-import { format } from "https://deno.land/std@0.188.0/datetime/mod.ts";
+import * as autocmd from "https://deno.land/x/denops_std@v5.0.1/autocmd/mod.ts";
+import * as fn from "https://deno.land/x/denops_std@v5.0.1/function/mod.ts";
+import * as fs from "https://deno.land/std@0.194.0/fs/mod.ts";
+import * as helper from "https://deno.land/x/denops_std@v5.0.1/helper/mod.ts";
+import * as op from "https://deno.land/x/denops_std@v5.0.1/option/mod.ts";
+import * as path from "https://deno.land/std@0.194.0/path/mod.ts";
+import * as lambda from "https://deno.land/x/denops_std@v5.0.1/lambda/mod.ts";
+import * as vars from "https://deno.land/x/denops_std@v5.0.1/variable/mod.ts";
+import { batch } from "https://deno.land/x/denops_std@v5.0.1/batch/mod.ts";
+import { walk } from "https://deno.land/std@0.194.0/fs/walk.ts";
+import { format } from "https://deno.land/std@0.194.0/datetime/mod.ts";
 import dir from "https://deno.land/x/dir@1.5.1/mod.ts";
-import type { Denops } from "https://deno.land/x/denops_std@v5.0.0/mod.ts";
+import type { Denops } from "https://deno.land/x/denops_std@v5.0.1/mod.ts";
 import { Semaphore } from "https://deno.land/x/async@v2.0.2/mod.ts";
-import { assertBoolean, ensureString } from "https://deno.land/x/unknownutil@v2.1.1/mod.ts";
+import { assert, ensure, is } from "https://deno.land/x/unknownutil@v3.2.0/mod.ts";
 
 let debug = false;
 let enable = true;
-let writeEcho = true;
+let backupEcho = true;
+let backupNotify = false;
 let ignoreFileTypes = ["log"];
 let uiSelect = false;
 const files = new Map<string, string>();
-const home = ensureString(dir("home"));
+const home = ensure(dir("home"), is.String);
 let backup_dir = path.join(home, ".cache", "dps-autobackup");
 
 let events: autocmd.AutocmdEvent[] = [
@@ -88,7 +89,8 @@ export async function main(denops: Denops): Promise<void> {
 
   // Merge user config.
   enable = await vars.g.get(denops, "autobackup_enable", enable);
-  writeEcho = await vars.g.get(denops, "autobackup_write_echo", writeEcho);
+  backupEcho = await vars.g.get(denops, "autobackup_echo", backupEcho);
+  backupNotify = await vars.g.get(denops, "autobackup_notify", backupNotify);
   uiSelect = await vars.g.get(denops, "autobackup_use_ui_select", uiSelect);
   ignoreFileTypes = await vars.g.get(
     denops,
@@ -101,7 +103,8 @@ export async function main(denops: Denops): Promise<void> {
   clog({
     debug,
     enable,
-    writeEcho,
+    backupEcho,
+    backupNotify,
     ignoreFileTypes,
     events,
     backup_dir,
@@ -127,7 +130,7 @@ export async function main(denops: Denops): Promise<void> {
           clog({ ft, ff });
 
           // Get buffer info.
-          const inpath = ensureString(await fn.expand(denops, "%:p"));
+          const inpath = ensure(await fn.expand(denops, "%:p"), is.String);
 
           if (!existsSync(inpath)) {
             clog(`Not found inpath: [${inpath}]`);
@@ -157,9 +160,16 @@ export async function main(denops: Denops): Promise<void> {
           await fs.ensureDir(path.dirname(outpath));
           await Deno.writeTextFile(outpath, buffer);
 
-          if (writeEcho) {
-            console.log(`Write [${outpath}]`);
-            await denops.cmd(`echom "Write [${outpath}]"`);
+          if (backupEcho) {
+            console.log(`backup [${outpath}]`);
+            await denops.cmd(`echom "backup [${outpath}]"`);
+          }
+
+          if (backupNotify && denops.meta.host === "nvim") {
+            await helper.execute(
+              denops,
+              `lua vim.notify([[backup [${outpath}]], vim.log.levels.INFO)`,
+            );
           }
         });
       } catch (e) {
@@ -170,7 +180,7 @@ export async function main(denops: Denops): Promise<void> {
     async open(): Promise<void> {
       try {
         // Get buffer info.
-        const inpath = ensureString(await fn.expand(denops, "%:p"));
+        const inpath = ensure(await fn.expand(denops, "%:p"), is.String);
 
         if (!existsSync(inpath)) {
           await denops.cmd(`echom "${inpath} is not exist !"`);
@@ -218,7 +228,7 @@ export async function main(denops: Denops): Promise<void> {
 
     // deno-lint-ignore require-await
     async change(e: unknown): Promise<void> {
-      assertBoolean(e);
+      assert(e, is.Boolean);
       console.log(`Auto backup ${e}`);
       enable = e;
     },
