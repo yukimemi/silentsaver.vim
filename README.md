@@ -12,12 +12,12 @@ If you use [folke/lazy.nvim](https://github.com/folke/lazy.nvim).
 
 ```lua
 {
-    "yukimemi/dps-autobackup",
-    lazy = false,
-    dependencies = {
-      "vim-denops/denops.vim",
-    },
-  }
+  "yukimemi/dps-autobackup",
+  lazy = false,
+  dependencies = {
+    "vim-denops/denops.vim",
+  },
+}
 ```
 
 If you use [yukimemi/dvpm](https://github.com/yukimemi/dvpm).
@@ -78,11 +78,11 @@ default is ["CursorHold", "BufWritePre"]
 
 ```vim
 let g:autobackup_debug = v:false
-  let g:autobackup_echo = v:false
-  let g:autobackup_notify = v:true
-  let g:autobackup_dir = "~/.cache/autobackup"
-  let g:autobackup_events = ["CursorHold", "BufWritePre", "BufRead"]
-  let g:autobackup_ignore_filetypes = ["csv", "log"]
+let g:autobackup_echo = v:false
+let g:autobackup_notify = v:true
+let g:autobackup_dir = "~/.cache/autobackup"
+let g:autobackup_events = ["CursorHold", "BufWritePre", "BufRead"]
+let g:autobackup_ignore_filetypes = ["csv", "log"]
 ```
 
 # License 
