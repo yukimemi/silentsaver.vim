@@ -31,7 +31,11 @@
     "useTabs": false,
     "lineWidth": 100,
     "indentWidth": 2,
-    "singleQuote": false
+    "singleQuote": false,
+    "include": ["denops"]
+  },
+  "lint": {
+    "include": ["denops"]
   },
   "lock": false
 }
