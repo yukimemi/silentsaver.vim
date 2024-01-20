@@ -1,7 +1,7 @@
 // =============================================================================
 // File        : main.ts
 // Author      : yukimemi
-// Last Change : 2023/07/15 15:51:57.
+// Last Change : 2024/01/20 12:03:34.
 // =============================================================================
 
 import * as autocmd from "https://deno.land/x/denops_std@v5.2.0/autocmd/mod.ts";
@@ -221,7 +221,7 @@ export async function main(denops: Denops): Promise<void> {
             await fn.setqflist(denops, [], "a", {
               title: `[backup of ${inpath}]`,
               efm: "%f|%l",
-              lines: backFiles.map((f) => `${f}|${l}`),
+              lines: backFiles.sort().reverse().map((f) => `${f}|${l}`),
             });
           });
           await denops.cmd("botright copen");
