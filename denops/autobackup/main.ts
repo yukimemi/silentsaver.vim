@@ -18,7 +18,7 @@ import { format } from "https://deno.land/std@0.216.0/datetime/mod.ts";
 import dir from "https://deno.land/x/dir@1.5.2/mod.ts";
 import type { Denops } from "https://deno.land/x/denops_std@v6.0.1/mod.ts";
 import { Semaphore } from "https://deno.land/x/async@v2.1.0/mod.ts";
-import { assert, ensure, is } from "https://deno.land/x/unknownutil@v3.16.1/mod.ts";
+import { assert, ensure, is } from "https://deno.land/x/unknownutil@v3.16.3/mod.ts";
 
 let debug = false;
 let enable = true;
