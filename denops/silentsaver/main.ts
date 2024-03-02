@@ -1,7 +1,7 @@
 // =============================================================================
 // File        : main.ts
 // Author      : yukimemi
-// Last Change : 2024/01/20 12:03:34.
+// Last Change : 2024/03/02 22:58:00.
 // =============================================================================
 
 import * as autocmd from "https://deno.land/x/denops_std@v6.2.0/autocmd/mod.ts";
@@ -28,7 +28,7 @@ let ignoreFileTypes = ["log"];
 let uiSelect = false;
 const files = new Map<string, string>();
 const home = ensure(dir("home"), is.String);
-let backup_dir = path.join(home, ".cache", "dps-autobackup");
+let backup_dir = path.join(home, ".cache", "silentsaver");
 
 let events: autocmd.AutocmdEvent[] = [
   "CursorHold",
@@ -85,7 +85,7 @@ function nvimSelect(
 
 export async function main(denops: Denops): Promise<void> {
   // debug.
-  debug = await vars.g.get(denops, "autobackup_debug", debug);
+  debug = await vars.g.get(denops, "silentsaver_debug", debug);
   // deno-lint-ignore no-explicit-any
   const clog = (...data: any[]): void => {
     if (debug) {
@@ -94,17 +94,17 @@ export async function main(denops: Denops): Promise<void> {
   };
 
   // Merge user config.
-  enable = await vars.g.get(denops, "autobackup_enable", enable);
-  backupEcho = await vars.g.get(denops, "autobackup_echo", backupEcho);
-  backupNotify = await vars.g.get(denops, "autobackup_notify", backupNotify);
-  uiSelect = await vars.g.get(denops, "autobackup_use_ui_select", uiSelect);
+  enable = await vars.g.get(denops, "silentsaver_enable", enable);
+  backupEcho = await vars.g.get(denops, "silentsaver_echo", backupEcho);
+  backupNotify = await vars.g.get(denops, "silentsaver_notify", backupNotify);
+  uiSelect = await vars.g.get(denops, "silentsaver_use_ui_select", uiSelect);
   ignoreFileTypes = await vars.g.get(
     denops,
-    "autobackup_ignore_filetypes",
+    "silentsaver_ignore_filetypes",
     ignoreFileTypes,
   );
-  events = await vars.g.get(denops, "autobackup_events", events);
-  backup_dir = await vars.g.get(denops, "autobackup_dir", backup_dir);
+  events = await vars.g.get(denops, "silentsaver_events", events);
+  backup_dir = await vars.g.get(denops, "silentsaver_dir", backup_dir);
 
   clog({
     debug,
@@ -246,9 +246,9 @@ export async function main(denops: Denops): Promise<void> {
     function! s:${denops.name}_notify(method, params) abort
       call denops#plugin#wait_async('${denops.name}', function('denops#notify', ['${denops.name}', a:method, a:params]))
     endfunction
-    command! EnableAutobackup call s:${denops.name}_notify('change', [v:true])
-    command! DisableAutobackup call s:${denops.name}_notify('change', [v:false])
-    command! OpenAutobackup call s:${denops.name}_notify('open', [])
+    command! EnableSilentSaver call s:${denops.name}_notify('change', [v:true])
+    command! DisableSilentSaver call s:${denops.name}_notify('change', [v:false])
+    command! OpenSilentSaver call s:${denops.name}_notify('open', [])
   `,
   );
 
@@ -263,5 +263,5 @@ export async function main(denops: Denops): Promise<void> {
     });
   });
 
-  clog("dps-autobackup has loaded");
+  clog("silentsaver has loaded");
 }

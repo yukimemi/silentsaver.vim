@@ -1,18 +1,18 @@
-# dps-autobackup
+# silentsaver.vim
 
-Denops auto backup
+Auto file backup silently.
 
-# Features 
+# Features
 
-dps-autobackup is a Vim plugin that automatically backup files.
+silentsaver.vim is a Vim plugin that automatically backup files.
 
-# Installation 
+# Installation
 
 If you use [folke/lazy.nvim](https://github.com/folke/lazy.nvim).
 
 ```lua
 {
-  "yukimemi/dps-autobackup",
+  "yukimemi/silentsaver.vim",
   lazy = false,
   dependencies = {
     "vim-denops/denops.vim",
@@ -23,69 +23,70 @@ If you use [folke/lazy.nvim](https://github.com/folke/lazy.nvim).
 If you use [yukimemi/dvpm](https://github.com/yukimemi/dvpm).
 
 ```typescript
-dvpm.add({ url: "yukimemi/dps-autobackup" });
+dvpm.add({ url: "yukimemi/silentsaver.vim" });
 ```
 
-# Requirements 
+# Requirements
 
 - [Deno - A modern runtime for JavaScript and TypeScript](https://deno.land/)
 - [vim-denops/denops.vim: 🐜 An ecosystem of Vim/Neovim which allows developers to write cross-platform plugins in Deno](https://github.com/vim-denops/denops.vim)
-# Usage 
+
+# Usage
 
 No special settings are required.
 By default, auto backup current buffer on `CursorHold` and `BufWritePre`.
 
-# Commands 
+# Commands
 
-`:DisableAutobackup`                                      
+`:DisableSilentSaver`
 Disable auto backup.
 
-`:EnableAutobackup`                                        
+`:EnableSilentSaver`
 Enable auto backup.
 
-`:OpenAutobackup`                                            
+`:OpenSilentSaver`
 Show list of backed up files with quickfix.
 
-# Config 
+# Config
 
 No settings are required. However, the following settings can be made if necessary.
 
-`g:autobackup_debug`                                      
+`g:silentsaver_debug`
 Enable debug messages.
 default is v:false
 
-`g:autobackup_ignore_filetypes`                
+`g:silentsaver_ignore_filetypes`
 A list of filetypes to be ignored.
 default is ["log"]
 
-`g:autobackup_echo`                                        
+`g:silentsaver_echo`
 Whether to output echo messages during backup.
 default is v:true
 
-`g:autobackup_notify`                                    
+`g:silentsaver_notify`
 Whether to `vim.notify` messages during backup. (Neovim only)
 default is v:false
 
-`g:autobackup_dir`                                          
+`g:silentsaver_dir`
 Backup directory.
-default is `~/.cache/dps-autobackup`
+default is `~/.cache/silentsaver`
 
-`g:autobackup_events`                                    
+`g:silentsaver_events`
 Event lists to do backup.
 default is ["CursorHold", "BufWritePre"]
 
-# Example 
+# Example
 
 ```vim
-let g:autobackup_debug = v:false
-let g:autobackup_echo = v:false
-let g:autobackup_notify = v:true
-let g:autobackup_dir = "~/.cache/autobackup"
-let g:autobackup_events = ["CursorHold", "BufWritePre", "BufRead"]
-let g:autobackup_ignore_filetypes = ["csv", "log"]
+let g:silentsaver_debug = v:false
+let g:silentsaver_echo = v:false
+let g:silentsaver_notify = v:true
+let g:silentsaver_dir = "~/.cache/silentsaver"
+let g:silentsaver_events = ["CursorHold", "BufWritePre", "BufRead"]
+let g:silentsaver_ignore_filetypes = ["csv", "log"]
 ```
 
-# License 
+# License
 
 Licensed under MIT License.
 
