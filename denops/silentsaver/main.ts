@@ -4,19 +4,19 @@
 // Last Change : 2024/03/02 22:58:00.
 // =============================================================================
 
-import * as autocmd from "https://deno.land/x/denops_std@v6.3.0/autocmd/mod.ts";
-import * as fn from "https://deno.land/x/denops_std@v6.3.0/function/mod.ts";
+import * as autocmd from "https://deno.land/x/denops_std@v6.4.0/autocmd/mod.ts";
+import * as fn from "https://deno.land/x/denops_std@v6.4.0/function/mod.ts";
 import * as fs from "https://deno.land/std@0.219.1/fs/mod.ts";
-import * as helper from "https://deno.land/x/denops_std@v6.3.0/helper/mod.ts";
-import * as op from "https://deno.land/x/denops_std@v6.3.0/option/mod.ts";
+import * as helper from "https://deno.land/x/denops_std@v6.4.0/helper/mod.ts";
+import * as op from "https://deno.land/x/denops_std@v6.4.0/option/mod.ts";
 import * as path from "https://deno.land/std@0.219.1/path/mod.ts";
-import * as lambda from "https://deno.land/x/denops_std@v6.3.0/lambda/mod.ts";
-import * as vars from "https://deno.land/x/denops_std@v6.3.0/variable/mod.ts";
-import { batch } from "https://deno.land/x/denops_std@v6.3.0/batch/mod.ts";
+import * as lambda from "https://deno.land/x/denops_std@v6.4.0/lambda/mod.ts";
+import * as vars from "https://deno.land/x/denops_std@v6.4.0/variable/mod.ts";
+import { batch } from "https://deno.land/x/denops_std@v6.4.0/batch/mod.ts";
 import { walk } from "https://deno.land/std@0.219.1/fs/walk.ts";
 import { format } from "https://deno.land/std@0.219.1/datetime/mod.ts";
 import dir from "https://deno.land/x/dir@1.5.2/mod.ts";
-import type { Denops } from "https://deno.land/x/denops_std@v6.3.0/mod.ts";
+import type { Denops } from "https://deno.land/x/denops_std@v6.4.0/mod.ts";
 import { Semaphore } from "https://deno.land/x/async@v2.1.0/mod.ts";
 import { assert, ensure, is } from "https://deno.land/x/unknownutil@v3.17.0/mod.ts";
 
