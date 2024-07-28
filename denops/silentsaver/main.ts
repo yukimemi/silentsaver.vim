@@ -6,18 +6,18 @@
 
 import * as autocmd from "jsr:@denops/std@7.0.0/autocmd";
 import * as fn from "jsr:@denops/std@7.0.0/function";
-import * as fs from "jsr:@std/fs@0.224.0";
+import * as fs from "jsr:@std/fs@1.0.0";
 import * as helper from "jsr:@denops/std@7.0.0/helper";
 import * as lambda from "jsr:@denops/std@7.0.0/lambda";
 import * as op from "jsr:@denops/std@7.0.0/option";
-import * as path from "jsr:@std/path@0.224.0";
+import * as path from "jsr:@std/path@1.0.2";
 import * as vars from "jsr:@denops/std@7.0.0/variable";
 import type { Denops } from "jsr:@denops/std@7.0.0";
 import { Semaphore } from "jsr:@lambdalisue/async@2.1.1";
 import { assert, ensure, is } from "jsr:@core/unknownutil@3.18.1";
 import { batch } from "jsr:@denops/std@7.0.0/batch";
 import { dir } from "jsr:@cross/dir@1.1.0";
-import { format } from "jsr:@std/datetime@0.224.0";
+import { format } from "jsr:@std/datetime@0.224.3";
 import { walk } from "jsr:@std/fs@0.224.0";
 
 let debug = false;
