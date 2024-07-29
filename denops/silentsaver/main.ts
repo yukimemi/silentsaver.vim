@@ -18,7 +18,7 @@ import { assert, ensure, is } from "jsr:@core/unknownutil@3.18.1";
 import { batch } from "jsr:@denops/std@7.0.0/batch";
 import { dir } from "jsr:@cross/dir@1.1.0";
 import { format } from "jsr:@std/datetime@0.224.3";
-import { walk } from "jsr:@std/fs@0.224.0";
+import { walk } from "jsr:@std/fs@1.0.0";
 
 let debug = false;
 let enable = true;
