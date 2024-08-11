@@ -14,7 +14,7 @@ import * as path from "jsr:@std/path@1.0.2";
 import * as vars from "jsr:@denops/std@7.0.3/variable";
 import type { Denops } from "jsr:@denops/std@7.0.3";
 import { Semaphore } from "jsr:@lambdalisue/async@2.1.1";
-import { assert, ensure, is } from "jsr:@core/unknownutil@4.0.0";
+import { assert, ensure, is } from "jsr:@core/unknownutil@4.1.0";
 import { batch } from "jsr:@denops/std@7.0.3/batch";
 import { dir } from "jsr:@cross/dir@1.1.0";
 import { format } from "jsr:@std/datetime@0.224.4";
