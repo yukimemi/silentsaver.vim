@@ -17,7 +17,7 @@ import { Semaphore } from "jsr:@lambdalisue/async@2.1.1";
 import { assert, ensure, is } from "jsr:@core/unknownutil@4.3.0";
 import { batch } from "jsr:@denops/std@7.4.0/batch";
 import { dir } from "jsr:@cross/dir@1.1.0";
-import { format } from "jsr:@std/datetime@0.225.2";
+import { format } from "jsr:@std/datetime@0.225.3";
 import { walk } from "jsr:@std/fs@1.0.8";
 
 let debug = false;
