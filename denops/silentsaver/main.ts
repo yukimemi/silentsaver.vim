@@ -1,7 +1,7 @@
 // =============================================================================
 // File        : main.ts
 // Author      : yukimemi
-// Last Change : 2025/02/01 14:39:49.
+// Last Change : 2025/02/01 16:01:07.
 // =============================================================================
 
 import * as autocmd from "jsr:@denops/std@7.4.0/autocmd";
@@ -27,7 +27,7 @@ let backupNotify = false;
 let ignoreFileTypes = ["log"];
 let uiSelect = false;
 const home = ensure(await dir("home"), is.String);
-let backup_dir = path.join(home, ".cache", "silentsaver");
+let backupDir = path.join(home, ".cache", "silentsaver");
 
 let events: autocmd.AutocmdEvent[] = [
   "CursorHold",
@@ -41,7 +41,7 @@ function createBackPath(src: string) {
   const srcParsed = path.parse(src);
   const dst = path.normalize(
     path.join(
-      backup_dir,
+      backupDir,
       srcParsed.dir.replaceAll(":", ""),
       srcParsed.base,
       `${now}${srcParsed.ext}`,
@@ -103,7 +103,7 @@ export async function main(denops: Denops): Promise<void> {
     ignoreFileTypes,
   );
   events = await vars.g.get(denops, "silentsaver_events", events);
-  backup_dir = await vars.g.get(denops, "silentsaver_dir", backup_dir);
+  backupDir = await vars.g.get(denops, "silentsaver_dir", backupDir);
 
   clog({
     debug,
@@ -112,7 +112,7 @@ export async function main(denops: Denops): Promise<void> {
     backupNotify,
     ignoreFileTypes,
     events,
-    backup_dir,
+    backupDir,
   });
 
   denops.dispatcher = {
@@ -130,10 +130,6 @@ export async function main(denops: Denops): Promise<void> {
             return;
           }
 
-          const ff = await op.fileformat.get(denops);
-
-          clog({ ft, ff });
-
           // Get buffer info.
           const inpath = ensure(await fn.expand(denops, "%:p"), is.String);
 
@@ -146,6 +142,10 @@ export async function main(denops: Denops): Promise<void> {
 
           // Get output path.
           const outpath = createBackPath(inpath);
+          if (inpath.startsWith(backupDir)) {
+            clog(`${inpath} is backup dir so skip !}`);
+            return;
+          }
 
           // Check modified.
           const latestBackup = await findLatestBackup(path.dirname(outpath));
