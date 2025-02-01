@@ -1,7 +1,7 @@
 // =============================================================================
 // File        : main.ts
 // Author      : yukimemi
-// Last Change : 2025/02/01 16:01:07.
+// Last Change : 2025/02/01 16:48:40.
 // =============================================================================
 
 import * as autocmd from "jsr:@denops/std@7.4.0/autocmd";
@@ -12,9 +12,9 @@ import * as lambda from "jsr:@denops/std@7.4.0/lambda";
 import * as op from "jsr:@denops/std@7.4.0/option";
 import * as path from "jsr:@std/path@1.0.8";
 import * as vars from "jsr:@denops/std@7.4.0/variable";
+import * as z from "npm:zod@3.24.1";
 import type { Denops } from "jsr:@denops/std@7.4.0";
 import { Semaphore } from "jsr:@lambdalisue/async@2.1.1";
-import { assert, ensure, is } from "jsr:@core/unknownutil@4.3.0";
 import { batch } from "jsr:@denops/std@7.4.0/batch";
 import { dir } from "jsr:@cross/dir@1.1.0";
 import { format } from "jsr:@std/datetime@0.225.3";
@@ -26,7 +26,7 @@ let backupEcho = true;
 let backupNotify = false;
 let ignoreFileTypes = ["log"];
 let uiSelect = false;
-const home = ensure(await dir("home"), is.String);
+const home = z.string().parse(await dir("home"));
 let backupDir = path.join(home, ".cache", "silentsaver");
 
 let events: autocmd.AutocmdEvent[] = [
@@ -131,7 +131,7 @@ export async function main(denops: Denops): Promise<void> {
           }
 
           // Get buffer info.
-          const inpath = ensure(await fn.expand(denops, "%:p"), is.String);
+          const inpath = z.string().parse(await fn.expand(denops, "%:p"));
 
           if (!fs.existsSync(inpath)) {
             clog(`Not found inpath: [${inpath}]`);
@@ -184,7 +184,7 @@ export async function main(denops: Denops): Promise<void> {
     async open(): Promise<void> {
       try {
         // Get buffer info.
-        const inpath = ensure(await fn.expand(denops, "%:p"), is.String);
+        const inpath = z.string().parse(await fn.expand(denops, "%:p"));
 
         if (!fs.existsSync(inpath)) {
           await denops.cmd(`echom "${inpath} is not exist !"`);
@@ -231,9 +231,8 @@ export async function main(denops: Denops): Promise<void> {
 
     // deno-lint-ignore require-await
     async change(e: unknown): Promise<void> {
-      assert(e, is.Boolean);
-      console.log(`Auto backup ${e}`);
-      enable = e;
+      enable = z.boolean().parse(e);
+      console.log(`Auto backup ${enable}`);
     },
   };
 
