@@ -1,7 +1,7 @@
 // =============================================================================
 // File        : main.ts
 // Author      : yukimemi
-// Last Change : 2024/07/28 21:29:28.
+// Last Change : 2025/02/01 14:39:49.
 // =============================================================================
 
 import * as autocmd from "jsr:@denops/std@7.4.0/autocmd";
@@ -26,7 +26,6 @@ let backupEcho = true;
 let backupNotify = false;
 let ignoreFileTypes = ["log"];
 let uiSelect = false;
-const files = new Map<string, string>();
 const home = ensure(await dir("home"), is.String);
 let backup_dir = path.join(home, ".cache", "silentsaver");
 
@@ -37,18 +36,6 @@ let events: autocmd.AutocmdEvent[] = [
 
 const lock = new Semaphore(1);
 
-function existsSync(filePath: string): boolean {
-  try {
-    Deno.lstatSync(filePath);
-    return true;
-  } catch (err) {
-    if (err instanceof Deno.errors.NotFound) {
-      return false;
-    }
-    throw err;
-  }
-}
-
 function createBackPath(src: string) {
   const now = format(new Date(), "yyyyMMdd_HHmmssSSS");
   const srcParsed = path.parse(src);
@@ -56,10 +43,22 @@ function createBackPath(src: string) {
     path.join(
       backup_dir,
       srcParsed.dir.replaceAll(":", ""),
-      `${srcParsed.name}_${now}${srcParsed.ext}`,
+      srcParsed.base,
+      `${now}${srcParsed.ext}`,
     ),
   );
   return dst;
+}
+
+async function findLatestBackup(backupDir: string): Promise<string | undefined> {
+  if (!fs.existsSync(backupDir)) {
+    return undefined;
+  }
+  const latest = (await Array.fromAsync(walk(backupDir, {
+    maxDepth: 1,
+    includeDirs: false,
+  }))).map((entry) => entry.path).sort().pop();
+  return latest;
 }
 
 function nvimSelect(
@@ -138,27 +137,25 @@ export async function main(denops: Denops): Promise<void> {
           // Get buffer info.
           const inpath = ensure(await fn.expand(denops, "%:p"), is.String);
 
-          if (!existsSync(inpath)) {
+          if (!fs.existsSync(inpath)) {
             clog(`Not found inpath: [${inpath}]`);
             return;
           }
 
-          let buffer = (await fn.getline(denops, 1, "$")).join("\n");
-          if (ff === "dos") {
-            buffer = buffer.split("\n").join("\r\n");
-          }
+          const buffer = (await fn.getline(denops, 1, "$")).join("\n");
 
-          // Check modified.
-          const beforeBuffer = files.get(inpath) ?? buffer;
-          // Save now buffer.
-          files.set(inpath, buffer);
-
-          if (buffer === beforeBuffer) {
-            clog(`Same buffer so backup skip !`);
-            return;
-          }
           // Get output path.
           const outpath = createBackPath(inpath);
+
+          // Check modified.
+          const latestBackup = await findLatestBackup(path.dirname(outpath));
+          if (latestBackup) {
+            const latestBuffer = await Deno.readTextFile(latestBackup);
+            if (latestBuffer === buffer) {
+              clog(`Same buffer so backup skip !`);
+              return;
+            }
+          }
 
           clog(`inpath: ${inpath}`);
           clog(`outpath: ${outpath}`);
@@ -166,15 +163,16 @@ export async function main(denops: Denops): Promise<void> {
           await fs.ensureDir(path.dirname(outpath));
           await Deno.writeTextFile(outpath, buffer);
 
+          const msg = `backup ${outpath.replaceAll("\\", "/")}`;
           if (backupEcho) {
-            console.log(`backup [${outpath}]`);
-            await denops.cmd(`echom "backup [${outpath}]"`);
+            console.log(msg);
+            await helper.echo(denops, msg);
           }
 
           if (backupNotify && denops.meta.host === "nvim") {
             await helper.execute(
               denops,
-              `lua vim.notify([[backup [${outpath}]], vim.log.levels.INFO)`,
+              `lua vim.notify([[${msg}]], vim.log.levels.INFO)`,
             );
           }
         });
@@ -188,7 +186,7 @@ export async function main(denops: Denops): Promise<void> {
         // Get buffer info.
         const inpath = ensure(await fn.expand(denops, "%:p"), is.String);
 
-        if (!existsSync(inpath)) {
+        if (!fs.existsSync(inpath)) {
           await denops.cmd(`echom "${inpath} is not exist !"`);
           return;
         }
@@ -202,7 +200,6 @@ export async function main(denops: Denops): Promise<void> {
           const entry of walk(backDir, {
             maxDepth: 1,
             includeDirs: false,
-            match: [new RegExp(path.parse(inpath).name)],
           })
         ) {
           backFiles.push(entry.path);
@@ -240,25 +237,13 @@ export async function main(denops: Denops): Promise<void> {
     },
   };
 
-  await helper.execute(
-    denops,
-    `
-    function! s:${denops.name}_notify(method, params) abort
-      call denops#plugin#wait_async('${denops.name}', function('denops#notify', ['${denops.name}', a:method, a:params]))
-    endfunction
-    command! EnableSilentSaver call s:${denops.name}_notify('change', [v:true])
-    command! DisableSilentSaver call s:${denops.name}_notify('change', [v:false])
-    command! OpenSilentSaver call s:${denops.name}_notify('open', [])
-  `,
-  );
-
   await autocmd.group(denops, denops.name, (helper) => {
     helper.remove();
     events.forEach((e) => {
       helper.define(
         e,
         "*",
-        `call s:${denops.name}_notify('backup', [])`,
+        `call ${denops.name}#backup()`,
       );
     });
   });
