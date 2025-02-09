@@ -59,6 +59,9 @@ Enable auto backup.
 `:OpenSilentSaver`                                         *:OpenSilentSaver*
 Show list of backed up files with quickfix.
 
+`:DiffSilentSaver`                                         *:DiffSilentSaver*
+Display diff with original file when backed up files are open.
+
 =============================================================================
 Config ~
                                                          *silentsaver-config*

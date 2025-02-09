@@ -1,7 +1,7 @@
 " =============================================================================
 " File        : silentsaver.vim
 " Author      : yukimemi
-" Last Change : 2025/02/01 12:32:19.
+" Last Change : 2025/02/09 17:03:40.
 " =============================================================================
 
 function! silentsaver#denops_notify(method, params) abort
@@ -18,4 +18,8 @@ endfunction
 
 function! silentsaver#open(...) abort
   call silentsaver#denops_notify("open", a:000)
+endfunction
+
+function! silentsaver#diff(...) abort
+  call silentsaver#denops_notify("diff", a:000)
 endfunction

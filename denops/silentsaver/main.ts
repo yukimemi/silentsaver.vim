@@ -1,7 +1,7 @@
 // =============================================================================
 // File        : main.ts
 // Author      : yukimemi
-// Last Change : 2025/02/01 16:48:40.
+// Last Change : 2025/02/09 17:03:02.
 // =============================================================================
 
 import * as autocmd from "jsr:@denops/std@7.4.0/autocmd";
@@ -36,7 +36,7 @@ let events: autocmd.AutocmdEvent[] = [
 
 const lock = new Semaphore(1);
 
-function createBackPath(src: string) {
+export function createBackPath(src: string, backupDir: string): string {
   const now = format(new Date(), "yyyyMMdd_HHmmssSSS");
   const srcParsed = path.parse(src);
   const dst = path.normalize(
@@ -48,6 +48,29 @@ function createBackPath(src: string) {
     ),
   );
   return dst;
+}
+
+export function getOriginalPath(backupPath: string, backupDir: string): string {
+  if (!backupPath.startsWith(backupDir)) {
+    throw new Error("Backup path does not start with backupDir");
+  }
+
+  let excludedBackupDir = backupPath.substring(backupDir.length);
+  if (Deno.build.os === "windows") {
+    excludedBackupDir = excludedBackupDir.replace(/^[\\/]/, "");
+  }
+  const originalPathParts = path.parse(path.parse(excludedBackupDir).dir);
+  if (Deno.build.os === "windows") {
+    originalPathParts.root = originalPathParts.dir.split(path.SEPARATOR)[0] + ":\\";
+    originalPathParts.dir = path.join(
+      originalPathParts.root,
+      originalPathParts.dir.split(path.SEPARATOR).slice(1).join(
+        path.SEPARATOR,
+      ),
+    );
+  }
+
+  return path.normalize(path.format(originalPathParts));
 }
 
 async function findLatestBackup(backupDir: string): Promise<string | undefined> {
@@ -141,7 +164,7 @@ export async function main(denops: Denops): Promise<void> {
           const buffer = (await fn.getline(denops, 1, "$")).join("\n");
 
           // Get output path.
-          const outpath = createBackPath(inpath);
+          const outpath = createBackPath(inpath, backupDir);
           if (inpath.startsWith(backupDir)) {
             clog(`${inpath} is backup dir so skip !}`);
             return;
@@ -192,7 +215,7 @@ export async function main(denops: Denops): Promise<void> {
         }
 
         // Get output path.
-        const backpath = createBackPath(inpath);
+        const backpath = createBackPath(inpath, backupDir);
         const backDir = path.dirname(backpath);
 
         const backFiles: string[] = [];
@@ -226,6 +249,16 @@ export async function main(denops: Denops): Promise<void> {
       } catch (e) {
         await denops.cmd(`echom "Error ${e}"`);
         clog(e);
+      }
+    },
+
+    async diff(): Promise<void> {
+      try {
+        const inpath = z.string().parse(await fn.expand(denops, "%:p"));
+        const originalPath = getOriginalPath(inpath, backupDir);
+        await denops.cmd(`diffsplit ${originalPath}`);
+      } catch (e) {
+        console.error(e);
       }
     },
 
