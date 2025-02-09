@@ -1,7 +1,7 @@
 // =============================================================================
 // File        : main.ts
 // Author      : yukimemi
-// Last Change : 2025/02/09 17:03:02.
+// Last Change : 2025/02/09 17:29:50.
 // =============================================================================
 
 import * as autocmd from "jsr:@denops/std@7.4.0/autocmd";
@@ -26,6 +26,7 @@ let backupEcho = true;
 let backupNotify = false;
 let ignoreFileTypes = ["log"];
 let uiSelect = false;
+let diffVertical = false;
 const home = z.string().parse(await dir("home"));
 let backupDir = path.join(home, ".cache", "silentsaver");
 
@@ -120,6 +121,7 @@ export async function main(denops: Denops): Promise<void> {
   backupEcho = await vars.g.get(denops, "silentsaver_echo", backupEcho);
   backupNotify = await vars.g.get(denops, "silentsaver_notify", backupNotify);
   uiSelect = await vars.g.get(denops, "silentsaver_use_ui_select", uiSelect);
+  diffVertical = await vars.g.get(denops, "silentsaver_diff_vertical", diffVertical);
   ignoreFileTypes = await vars.g.get(
     denops,
     "silentsaver_ignore_filetypes",
@@ -256,7 +258,11 @@ export async function main(denops: Denops): Promise<void> {
       try {
         const inpath = z.string().parse(await fn.expand(denops, "%:p"));
         const originalPath = getOriginalPath(inpath, backupDir);
-        await denops.cmd(`diffsplit ${originalPath}`);
+        if (diffVertical) {
+          await denops.cmd(`vertical diffsplit ${originalPath}`);
+        } else {
+          await denops.cmd(`diffsplit ${originalPath}`);
+        }
       } catch (e) {
         console.error(e);
       }

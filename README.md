@@ -78,12 +78,17 @@ default is `~/.cache/silentsaver`
 Event lists to do backup.
 default is ["CursorHold", "BufWritePre"]
 
+`g:silentsaver_diff_vertical`
+Whether to open diff with vertical.
+default is v:false.
+
 # Example
 
 ```vim
 let g:silentsaver_debug = v:false
 let g:silentsaver_echo = v:false
 let g:silentsaver_notify = v:true
+let g:silentsaver_diff_vertical = v:true
 let g:silentsaver_dir = "~/.cache/silentsaver"
 let g:silentsaver_events = ["CursorHold", "BufWritePre", "BufRead"]
 let g:silentsaver_ignore_filetypes = ["csv", "log"]
