@@ -4,18 +4,18 @@
 // Last Change : 2025/02/09 17:29:50.
 // =============================================================================
 
-import * as autocmd from "jsr:@denops/std@7.4.0/autocmd";
-import * as fn from "jsr:@denops/std@7.4.0/function";
+import * as autocmd from "jsr:@denops/std@7.5.0/autocmd";
+import * as fn from "jsr:@denops/std@7.5.0/function";
 import * as fs from "jsr:@std/fs@1.0.13";
-import * as helper from "jsr:@denops/std@7.4.0/helper";
-import * as lambda from "jsr:@denops/std@7.4.0/lambda";
-import * as op from "jsr:@denops/std@7.4.0/option";
+import * as helper from "jsr:@denops/std@7.5.0/helper";
+import * as lambda from "jsr:@denops/std@7.5.0/lambda";
+import * as op from "jsr:@denops/std@7.5.0/option";
 import * as path from "jsr:@std/path@1.0.8";
-import * as vars from "jsr:@denops/std@7.4.0/variable";
+import * as vars from "jsr:@denops/std@7.5.0/variable";
 import * as z from "npm:zod@3.24.2";
-import type { Denops } from "jsr:@denops/std@7.4.0";
+import type { Denops } from "jsr:@denops/std@7.5.0";
 import { Semaphore } from "jsr:@lambdalisue/async@2.1.1";
-import { batch } from "jsr:@denops/std@7.4.0/batch";
+import { batch } from "jsr:@denops/std@7.5.0/batch";
 import { dir } from "jsr:@cross/dir@1.1.0";
 import { format } from "jsr:@std/datetime@0.225.3";
 import { walk } from "jsr:@std/fs@1.0.13";
