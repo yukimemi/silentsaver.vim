@@ -6,7 +6,7 @@
 
 import * as autocmd from "jsr:@denops/std@7.5.0/autocmd";
 import * as fn from "jsr:@denops/std@7.5.0/function";
-import * as fs from "jsr:@std/fs@1.0.15";
+import * as fs from "jsr:@std/fs@1.0.16";
 import * as helper from "jsr:@denops/std@7.5.0/helper";
 import * as lambda from "jsr:@denops/std@7.5.0/lambda";
 import * as op from "jsr:@denops/std@7.5.0/option";
@@ -17,7 +17,7 @@ import type { Denops } from "jsr:@denops/std@7.5.0";
 import { Semaphore } from "jsr:@lambdalisue/async@2.1.1";
 import { batch } from "jsr:@denops/std@7.5.0/batch";
 import { dir } from "jsr:@cross/dir@1.1.0";
-import { format } from "jsr:@std/datetime@0.225.3";
+import { format } from "jsr:@std/datetime@0.225.4";
 import { walk } from "jsr:@std/fs@1.0.15";
 
 let debug = false;
