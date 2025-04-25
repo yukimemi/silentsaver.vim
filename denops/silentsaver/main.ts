@@ -6,11 +6,11 @@
 
 import * as autocmd from "jsr:@denops/std@7.5.0/autocmd";
 import * as fn from "jsr:@denops/std@7.5.0/function";
-import * as fs from "jsr:@std/fs@1.0.16";
+import * as fs from "jsr:@std/fs@1.0.17";
 import * as helper from "jsr:@denops/std@7.5.0/helper";
 import * as lambda from "jsr:@denops/std@7.5.0/lambda";
 import * as op from "jsr:@denops/std@7.5.0/option";
-import * as path from "jsr:@std/path@1.0.8";
+import * as path from "jsr:@std/path@1.0.9";
 import * as vars from "jsr:@denops/std@7.5.0/variable";
 import * as z from "npm:zod@3.24.3";
 import type { Denops } from "jsr:@denops/std@7.5.0";
