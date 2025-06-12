@@ -12,7 +12,7 @@ import * as lambda from "jsr:@denops/std@7.5.1/lambda";
 import * as op from "jsr:@denops/std@7.5.1/option";
 import * as path from "jsr:@std/path@1.1.0";
 import * as vars from "jsr:@denops/std@7.5.1/variable";
-import * as z from "npm:zod@3.25.58";
+import * as z from "npm:zod@3.25.62";
 import type { Denops } from "jsr:@denops/std@7.5.1";
 import { Semaphore } from "jsr:@lambdalisue/async@2.1.1";
 import { batch } from "jsr:@denops/std@7.5.1/batch";
