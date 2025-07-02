@@ -6,7 +6,7 @@
 
 import * as autocmd from "jsr:@denops/std@7.6.0/autocmd";
 import * as fn from "jsr:@denops/std@7.6.0/function";
-import * as fs from "jsr:@std/fs@1.0.18";
+import * as fs from "jsr:@std/fs@1.0.19";
 import * as helper from "jsr:@denops/std@7.6.0/helper";
 import * as lambda from "jsr:@denops/std@7.6.0/lambda";
 import * as op from "jsr:@denops/std@7.6.0/option";
