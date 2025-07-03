@@ -12,13 +12,13 @@ import * as lambda from "jsr:@denops/std@7.6.0/lambda";
 import * as op from "jsr:@denops/std@7.6.0/option";
 import * as path from "jsr:@std/path@1.1.1";
 import * as vars from "jsr:@denops/std@7.6.0/variable";
-import * as z from "npm:zod@3.25.67";
+import * as z from "npm:zod@3.25.71";
 import type { Denops } from "jsr:@denops/std@7.6.0";
 import { Semaphore } from "jsr:@lambdalisue/async@2.1.1";
 import { batch } from "jsr:@denops/std@7.6.0/batch";
 import { dir } from "jsr:@cross/dir@1.1.0";
 import { format } from "jsr:@std/datetime@0.225.5";
-import { walk } from "jsr:@std/fs@1.0.18";
+import { walk } from "jsr:@std/fs@1.0.19";
 
 let debug = false;
 let enable = true;
