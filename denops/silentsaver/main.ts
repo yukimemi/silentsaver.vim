@@ -10,7 +10,7 @@ import * as fs from "jsr:@std/fs@1.0.19";
 import * as helper from "jsr:@denops/std@7.6.0/helper";
 import * as lambda from "jsr:@denops/std@7.6.0/lambda";
 import * as op from "jsr:@denops/std@7.6.0/option";
-import * as path from "jsr:@std/path@1.1.1";
+import * as path from "jsr:@std/path@1.1.2";
 import * as vars from "jsr:@denops/std@7.6.0/variable";
 import * as z from "npm:zod@4.0.17";
 import type { Denops } from "jsr:@denops/std@7.6.0";
