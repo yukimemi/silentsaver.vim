@@ -1,24 +1,24 @@
 // =============================================================================
 // File        : main.ts
 // Author      : yukimemi
-// Last Change : 2025/02/09 17:29:50.
+// Last Change : 2025/11/02 20:31:27.
 // =============================================================================
 
-import * as autocmd from "jsr:@denops/std@8.1.1/autocmd";
-import * as fn from "jsr:@denops/std@8.1.1/function";
-import * as fs from "jsr:@std/fs@1.0.19";
-import * as helper from "jsr:@denops/std@8.1.1/helper";
-import * as lambda from "jsr:@denops/std@8.1.1/lambda";
-import * as op from "jsr:@denops/std@8.1.1/option";
-import * as path from "jsr:@std/path@1.1.2";
-import * as vars from "jsr:@denops/std@8.1.1/variable";
-import * as z from "npm:zod@4.1.12";
-import type { Denops } from "jsr:@denops/std@8.1.1";
-import { Semaphore } from "jsr:@lambdalisue/async@2.1.1";
-import { batch } from "jsr:@denops/std@8.1.1/batch";
-import { dir } from "jsr:@cross/dir@1.1.0";
-import { format } from "jsr:@std/datetime@0.225.5";
-import { walk } from "jsr:@std/fs@1.0.19";
+import * as autocmd from "@denops/std/autocmd";
+import * as fn from "@denops/std/function";
+import * as fs from "@std/fs";
+import * as helper from "@denops/std/helper";
+import * as lambda from "@denops/std/lambda";
+import * as op from "@denops/std/option";
+import * as path from "@std/path";
+import * as vars from "@denops/std/variable";
+import * as z from "zod";
+import type { Denops } from "@denops/std";
+import { Semaphore } from "@lambdalisue/async";
+import { batch } from "@denops/std/batch";
+import { dir } from "@cross/dir";
+import { format } from "@std/datetime";
+import { walk } from "@std/fs";
 
 let debug = false;
 let enable = true;

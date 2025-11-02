@@ -99,4 +99,3 @@ let g:silentsaver_ignore_filetypes = ["csv", "log"]
 Licensed under MIT License.
 
 Copyright (c) 2023 yukimemi
-

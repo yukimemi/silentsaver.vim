@@ -20,7 +20,10 @@
     "include": ["denops"]
   },
   "lock": false,
+  "workspace": [
+    "./denops/silentsaver"
+  ],
   "imports": {
-    "@std/assert": "jsr:@std/assert@^1.0.2"
+    "@std/assert": "jsr:@std/assert@^1.0.15"
   }
 }
