@@ -1,7 +1,7 @@
 {
   "imports": {
     "@cross/dir": "jsr:@cross/dir@^1.1.0",
-    "@denops/std": "jsr:@denops/std@^8.1.1",
+    "@denops/std": "jsr:@denops/std@^8.2.0",
     "@lambdalisue/async": "jsr:@lambdalisue/async@^2.1.1",
     "@std/datetime": "jsr:@std/datetime@^0.225.5",
     "@std/fs": "jsr:@std/fs@^1.0.19",
