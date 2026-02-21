@@ -4,7 +4,7 @@
     "@denops/std": "jsr:@denops/std@^8.2.0",
     "@lambdalisue/async": "jsr:@lambdalisue/async@^2.1.1",
     "@std/datetime": "jsr:@std/datetime@^0.225.7",
-    "@std/fs": "jsr:@std/fs@^1.0.22",
+    "@std/fs": "jsr:@std/fs@^1.0.23",
     "@std/path": "jsr:@std/path@^1.1.4",
     "zod": "npm:zod@^4.3.6"
   }
